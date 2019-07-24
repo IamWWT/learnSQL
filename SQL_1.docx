@@ -1,0 +1,37 @@
+WEB source: https://liaoxuefeng.com/wiki/1177760294764384
+
+For 小白.
+
+-------definition---------
+sql ： 访问、处理 关系数据库 的 计算机标准语言。
+
+-------application--------
+电商网站：user & goods information
+手机游戏：user's tools & infomation about the game progress
+
+Contents:
+1. How to operate SQL database ?
+2. Install and use MySQL.
+
+-------Other related database-------
+NoSQL database, including MongoDB, Cassandra, Dynamo and etc, which are not the 关系数据库.
+
+----------History------------
+1970 : NoSQL = We have no SQL
+1980 : NoSQL = Know SQL
+2000 : NoSQL = No SQL!
+2005 : NoSQL = Not only SQL
+2013 : NoSQL = No, SQL!
+Now  : SQL   database = 各种应用程序的核心数据存储；
+       NoSQL database = SQL database的补充。
+
+--------Why need database ?----------
+管理大批量数据：
+---读写文件并解析出数据需要大量重复代码；
+---从成千上万的数据中快速查询出指定数据需要需要复杂的逻辑。
+--------如果 每个应用程序 都 各自写自己的读写data的code，一方面效率低，容易出错；另一方面，每个应用程序访问data的接口都不相同，data难以复用。
+So, database软件 就是专门管理数据的。
+application --->write---> database
+database   ---->read----> application
+
+
