@@ -32,7 +32,7 @@ mysql> SELECT
 如果输入到一半，不想执行这个语句了，输入\c。
 mysql> SELECT
     -> USER()
-    -> \n
+    -> \c
 
 状态解释-------------------------------------------
 mysql>			准备好了for新Query
@@ -846,4 +846,5 @@ mysql> SHOW TABLES;
 
 
 CH3.5 Using MySQL in Batch Mode.
+
 --ref: https://dev.mysql.com/doc/refman/8.0/en/batch-mode.html
