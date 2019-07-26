@@ -1,0 +1,143 @@
+连接查询 = 另一种类型的多表查询。
+
+连接查询对多个表进行JOIN运算。
+简单地说，就是先确定一个主表作为结果集，然后，把其他表的行有选择性地“连接”在主表结果集上。
+
+1. 普通查询。
+例子。
+想要选出students表的所有学生信息。
+mysql> SELECT s.id, s.name, s.class_id, s.gender, s.score FROM students s;
++----+--------+----------+--------+-------+
+| id | name   | class_id | gender | score |
++----+--------+----------+--------+-------+
+|  1 | 小明   |        1 | M      |    90 |
+|  2 | 小红   |        1 | F      |    95 |
+|  3 | 小军   |        1 | M      |    88 |
+|  4 | 小米   |        1 | F      |    73 |
+|  5 | 小白   |        2 | F      |    81 |
+|  6 | 小兵   |        2 | M      |    55 |
+|  7 | 小林   |        2 | M      |    85 |
+|  8 | 小新   |        3 | F      |    91 |
+|  9 | 小王   |        3 | M      |    89 |
+| 10 | 小丽   |        3 | F      |    85 |
++----+--------+----------+--------+-------+
+10 rows in set (0.00 sec)
+
+2. 连接查询。INNER JOIN .. ON ..
+假设我们希望结果集同时包含所在班级的名称，上面的结果集只有class_id列，缺少对应班级的name列。
+例子。
+mysql> SELECT s.id, s.name, s.class_id, c.name class_name, s.gender, s.score
+    -> FROM students s
+    -> INNER JOIN classes c
+    -> ON s.class_id = c.id; --这里条件是s.class_id = c.id，表students表的class_id列与classes表的id列相同的行需要连接；
++----+--------+----------+------------+--------+-------+
+| id | name   | class_id | class_name | gender | score |
++----+--------+----------+------------+--------+-------+
+|  1 | 小明   |        1 | 一班       | M      |    90 |
+|  2 | 小红   |        1 | 一班       | F      |    95 |
+|  3 | 小军   |        1 | 一班       | M      |    88 |
+|  4 | 小米   |        1 | 一班       | F      |    73 |
+|  5 | 小白   |        2 | 二班       | F      |    81 |
+|  6 | 小兵   |        2 | 二班       | M      |    55 |
+|  7 | 小林   |        2 | 二班       | M      |    85 |
+|  8 | 小新   |        3 | 三班       | F      |    91 |
+|  9 | 小王   |        3 | 三班       | M      |    89 |
+| 10 | 小丽   |        3 | 三班       | F      |    85 |
++----+--------+----------+------------+--------+-------+
+10 rows in set (0.00 sec)
+
+注意INNER JOIN查询的写法是：
+1-先确定主表，仍然使用FROM <表1>的语法；
+2-再确定需要连接的表，使用INNER JOIN <表2>的语法；
+3-然后确定连接条件，使用ON <条件...>
+4-可选：加上WHERE子句、ORDER BY等子句。
+
+3. 有内连接（INNER JOIN）就有外连接（OUTER JOIN）
+例子。
+mysql> SELECT s.id, s.name, s.class_id, c.name class_name, s.gender, s.score
+    -> FROM students s
+    -> RIGHT OUTER JOIN classes c
+    -> ON s.class_id = c.id;
++------+--------+----------+------------+--------+-------+
+| id   | name   | class_id | class_name | gender | score |
++------+--------+----------+------------+--------+-------+
+|    1 | 小明   |        1 | 一班       | M      |    90 |
+|    2 | 小红   |        1 | 一班       | F      |    95 |
+|    3 | 小军   |        1 | 一班       | M      |    88 |
+|    4 | 小米   |        1 | 一班       | F      |    73 |
+|    5 | 小白   |        2 | 二班       | F      |    81 |
+|    6 | 小兵   |        2 | 二班       | M      |    55 |
+|    7 | 小林   |        2 | 二班       | M      |    85 |
+|    8 | 小新   |        3 | 三班       | F      |    91 |
+|    9 | 小王   |        3 | 三班       | M      |    89 |
+|   10 | 小丽   |        3 | 三班       | F      |    85 |
+| NULL | NULL   |     NULL | 四班       | NULL   |  NULL |
++------+--------+----------+------------+--------+-------+
+11 rows in set (0.00 sec)
+--观察：和INNER JOIN相比。
+RIGHT OUTER JOIN多了一行，多出来的一行是“四班”，但是，学生相关的列如name、gender、score都为NULL。
+
+4. 有RIGHT OUTER JOIN，就有LEFT OUTER JOIN，以及FULL OUTER JOIN。
+它们的区别是：
+//INNER JOIN只返回【同时存在于】两张表的行数据，由于students表的class_id包含1，2，3，classes表的id包含1，2，3，4，所以，INNER JOIN根据条件s.class_id = c.id返回的结果集仅包含1，2，3。
+//RIGHT OUTER JOIN返回【右表都存在的】行。如果某一行仅在右表存在，那么结果集就会以NULL填充剩下的字段。
+//LEFT OUTER JOIN则返回【左表都存在的】行。如果我们给students表增加一行，并添加class_id=5，由于classes表并不存在id=5的行，
+所以，上面表中，RIGHT OUTER JOIN的结果会增加一行，对应的class_name是NULL：
+例子。
+mysql> SELECT s.id, s.name, s.class_id, c.name class_name, s.gender, s.score
+    -> FROM students s
+    -> LEFT OUTER JOIN classes c
+    -> ON s.class_id = c.id;
++----+--------+----------+------------+--------+-------+
+| id | name   | class_id | class_name | gender | score |
++----+--------+----------+------------+--------+-------+
+|  1 | 小明   |        1 | 一班       | M      |    90 |
+|  2 | 小红   |        1 | 一班       | F      |    95 |
+|  3 | 小军   |        1 | 一班       | M      |    88 |
+|  4 | 小米   |        1 | 一班       | F      |    73 |
+|  5 | 小白   |        2 | 二班       | F      |    81 |
+|  6 | 小兵   |        2 | 二班       | M      |    55 |
+|  7 | 小林   |        2 | 二班       | M      |    85 |
+|  8 | 小新   |        3 | 三班       | F      |    91 |
+|  9 | 小王   |        3 | 三班       | M      |    89 |
+| 10 | 小丽   |        3 | 三班       | F      |    85 |
++----+--------+----------+------------+--------+-------+
+10 rows in set (0.00 sec)
+
+例子2，先增加一行，看明确的效果。
+mysql> INSERT INTO students (class_id, name, gender, score) values (5, '新生', 'M', 88);
+Query OK, 1 row affected (0.10 sec)
+mysql> SELECT s.id, s.name, s.class_id, c.name class_name, s.gender, s.score
+    -> FROM students s
+    -> LEFT OUTER JOIN classes c
+    -> ON s.class_id = c.id;
++----+--------+----------+------------+--------+-------+
+| id | name   | class_id | class_name | gender | score |
++----+--------+----------+------------+--------+-------+
+|  1 | 小明   |        1 | 一班       | M      |    90 |
+|  2 | 小红   |        1 | 一班       | F      |    95 |
+|  3 | 小军   |        1 | 一班       | M      |    88 |
+|  4 | 小米   |        1 | 一班       | F      |    73 |
+|  5 | 小白   |        2 | 二班       | F      |    81 |
+|  6 | 小兵   |        2 | 二班       | M      |    55 |
+|  7 | 小林   |        2 | 二班       | M      |    85 |
+|  8 | 小新   |        3 | 三班       | F      |    91 |
+|  9 | 小王   |        3 | 三班       | M      |    89 |
+| 10 | 小丽   |        3 | 三班       | F      |    85 |
+| 11 | 新生   |        5 | NULL       | M      |    88 |
++----+--------+----------+------------+--------+-------+
+11 rows in set (0.00 sec)
+
+5. FULL OUTER JOIN：会把两张表的所有记录全部选择出来，并且，自动把对方不存在的列填充为NULL：
+例子
+mysql> SELECT s.id, s.name, s.class_id, c.name class_name, s.gender, s.score
+    -> FROM students s
+    -> FULL OUTER JOIN classes c
+    -> ON s.class_id = c.id;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FULL OUTER JOIN classes c
+ON s.class_id = c.id' at line 3
+
+6. 总结：
+LEFT OUTER JOIN是选出左表存在的记录：
+RIGHT OUTER JOIN是选出右表存在的记录：
+FULL OUTER JOIN则是选出左右表都存在的记录：==并集。

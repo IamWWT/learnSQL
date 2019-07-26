@@ -1,0 +1,157 @@
+聚合查询。
+
+目的：统计一张表的数据量，如，查询students表一共有多少条记录。
+
+对此，SQL提供了专门的聚合函数，使用聚合函数进行查询，就是聚合查询，它可以快速获得结果。
+
+1. 函数：COUNT(*)表示查询所有列的行数。
+
+注意：
+聚合的计算结果虽然是一个数字，但查询的结果仍然是一个二维表，只是这个二维表只有一行一列，并且列名是COUNT(*)。
+例：
+mysql> SELECT COUNT(*) FROM students;
++----------+
+| COUNT(*) |
++----------+
+|       10 |
++----------+
+1 row in set (0.09 sec)
+
+2. 通常，使用聚合查询时，我们应该给列名设置一个别名，便于处理结果
+例：
+mysql> SELECT COUNT(*) num FROM students;
++-----+
+| num |
++-----+
+|  10 |
++-----+
+1 row in set (0.00 sec)
+
+3. COUNT(*)和COUNT(id)实际上是一样的效果。
+例：
+聚合查询+条件查询
+mysql> SELECT COUNT(*) boys FROM students WHERE gender = 'M';
++------+
+| boys |
++------+
+|    5 |
++------+
+1 row in set (0.00 sec)
+
+4. 除了COUNT()函数外，SQL还提供了如下聚合函数：
+函数	说明
+SUM		计算某一列的合计值，该列必须为数值类型
+AVG		计算某一列的平均值，该列必须为数值类型
+MAX		计算某一列的最大值
+MIN		计算某一列的最小值
+
+例。
+条件查询+聚合查询。
+mysql> SELECT AVG(score) average FROM students WHERE gender = 'M';
++---------+
+| average |  -----被重命名为average了。
++---------+
+| 81.4000 |
++---------+
+1 row in set (0.07 sec)
+
+5. 要特别注意：如果聚合查询的WHERE条件·没有匹配到·任何行，COUNT()会返回0，而SUM()、AVG()、MAX()和MIN()会返回NULL：
+
+例。
+mysql> SELECT AVG(score) average FROM students WHERE gender = 'X';
++---------+
+| average |
++---------+
+|    NULL |
++---------+
+1 row in set (0.04 sec)
+
+QUESTION : 
+每页3条记录，如何通过聚合查询获得总页数？
+mysql> SELECT CEILING(COUNT(*) / 3) FROM students;
++-----------------------+
+| CEILING(COUNT(*) / 3) |
++-----------------------+
+|                     4 |
++-----------------------+
+1 row in set (0.07 sec)
+
+6. 分组聚合：GROUP BY 
+例子。
+统计各个班级的学生数量。
+按照 班级分组。
+例子1：
+mysql> SELECT COUNT(*) num FROM students GROUP BY class_id;
++-----+
+| num |
++-----+
+|   4 |
+|   3 |
+|   3 |
++-----+
+3 rows in set (0.04 sec)
+例子2：
+mysql> SELECT class_id, COUNT(*) num FROM students GROUP BY class_id;
++----------+-----+
+| class_id | num |
++----------+-----+
+|        1 |   4 |
+|        2 |   3 |
+|        3 |   3 |
++----------+-----+
+例子3：
+mysql> SELECT name, class_id, COUNT(*) num FROM students GROUP BY class_id;
+ERROR 1055 (42000): 
+Expression #1 of SELECT list is not in GROUP BY clause and contains nonaggregated column 
+'wang.students.name' which is not functionally dependent on columns in GROUP BY clause; 
+this is incompatible with sql_mode=only_full_group_by
+不出意外，执行这条查询我们会得到一个语法错误，
+因为在任意一个分组中，只有class_id都相同，name是不同的，SQL引擎不能把多个name的值放入一行记录中。
+因此，聚合查询的列中，只能放入分组的列。
+
+也可以使用多个列进行分组。例如，我们想统计各班的男生和女生人数：
+例。
+分组聚合+投影查询。
+mysql> SELECT class_id, gender, COUNT(*) num FROM students GROUP BY class_id, gender;
++----------+--------+-----+
+| class_id | gender | num |
++----------+--------+-----+
+|        1 | M      |   2 |
+|        1 | F      |   2 |
+|        2 | F      |   1 |
+|        2 | M      |   2 |
+|        3 | F      |   2 |
+|        3 | M      |   1 |
++----------+--------+-----+
+6 rows in set (0.00 sec)
+
+
+7. 请使用一条SELECT查询查出每个班级的平均分：
+mysql> SELECT 'TODO';
++------+
+| TODO |
++------+
+| TODO |
++------+
+1 row in set (0.00 sec)
+mysql> SELECT AVG(score) average_score FROM students;
++---------------+
+| average_score |
++---------------+
+|       83.2000 |
++---------------+
+1 row in set (0.00 sec)
+
+8. 请使用一条SELECT查询查出每个班级男生和女生的平均分：
+mysql> SELECT class_id, gender, AVG(score) average_score FROM students GROUP BY class_id,gender;
++----------+--------+---------------+
+| class_id | gender | average_score |
++----------+--------+---------------+
+|        1 | M      |       89.0000 |
+|        1 | F      |       84.0000 |
+|        2 | F      |       81.0000 |
+|        2 | M      |       70.0000 |
+|        3 | F      |       88.0000 |
+|        3 | M      |       89.0000 |
++----------+--------+---------------+
+6 rows in set (0.01 sec)
