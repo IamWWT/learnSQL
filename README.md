@@ -14,6 +14,8 @@ SQL_11		: 聚合查询COUNT(*)，SUM()、AVG()、MAX()，MIN()。
 SQL_12		: 多表查询。  
 SQL_13		: 连接查询LEFT/RIGHT/FULL OUTER JOIN。  
 SQL_14		: 修改数据INSERT
+SQL_15		: 修改数据UPDATE
+SQL_16		: 修改数据DELETE
 
 dev_mysql_com_Tutorialdocu.docx	：MySQL官网下当前8.0版本的教程第三章，暂时把基本操作学完了，第三章从第一节，记录到，第四节，由我自己的账户实时操作，已经全部验证正确。3.5以后的还没有看。pet.txt和event.txt文件都是该学习记录的衍生文件。  
 
