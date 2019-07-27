@@ -38,9 +38,9 @@ Connection reset by 13.250.177.223 port 22
 fatal: Could not read from remote repository.  
   
 Please make sure you have he correct access rights and the repository exists.  
--------------------解决办法-----------------------------
+-------------------解决办法-----------------------------  
 网上找了很多，都没有解决。应该是github用https而不是http的缘故，语句换一换解决了。  
-本来是：  
+本来是：   
 git remote add origin git@github.com:IamWWT/learnSQL.git  
-换成:  
+换成:    
 git remote add origin https://github.com/IamWWT/learnSQL.git  
