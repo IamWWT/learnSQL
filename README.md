@@ -1,6 +1,6 @@
 # learnSQL   	
 
-暂时把网站的内容基本内容弄完了。
+暂时把网站的内容基本内容弄完了。  
 
 主要学习界面	：https://www.liaoxuefeng.com/wiki/1177760294764384/1218728442198976   
 
@@ -21,10 +21,10 @@ SQL_16		: 修改数据DELETE
 SQL_17		: 管理SQL，数据库/表。  
 SQL_18		：实用SQL语句【插入OR替换，插入OR更新，插入OR忽略，快照，写入查询结果集】。   
 SQL_19		：事务【BEGING,UPDATE,COMMIT,ROLLBACK，ACID=事务的4个特性，4种隔离级别】。  
-SQL_20		：事务，Read Uncommited。
-SQL_21		：事务，Read Committed。
-SQL_22		：事务，Repeatable Read。
-SQL_23		：事务，Serializable。
+SQL_20		：事务，Read Uncommited。  
+SQL_21		：事务，Read Committed。  
+SQL_22		：事务，Repeatable Read。  
+SQL_23		：事务，Serializable。  
 
 dev_mysql_com_Tutorialdocu.docx	：MySQL官网下当前8.0版本的教程第三章，暂时把基本操作学完了，第三章从第一节，记录到，第四节，由我自己的账户实时操作，已经全部验证正确。3.5以后的还没有看。pet.txt和event.txt文件都是该学习记录的衍生文件。  
 
@@ -38,7 +38,7 @@ Connection reset by 13.250.177.223 port 22
 fatal: Could not read from remote repository.  
   
 Please make sure you have he correct access rights and the repository exists.  
-解决办法：  
+-------------------解决办法-----------------------------
 网上找了很多，都没有解决。应该是github用https而不是http的缘故，语句换一换解决了。  
 本来是：  
 git remote add origin git@github.com:IamWWT/learnSQL.git  
