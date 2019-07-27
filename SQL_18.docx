@@ -1,0 +1,199 @@
+实用SQL语句。
+
+--编写SQL时，灵活运用一些技巧，可以大大简化程序逻辑。
+
+【1. 插入OR替换。】
+INSERT：插入。
+REPLACE：存在就删旧插入新的，这样就不用先查询再决定是否先删除再插入。
+例子。
+mysql> SELECT * FROM students
+    -> ;
++----+----------+--------+--------+-------+
+| id | class_id | name   | gender | score |
++----+----------+--------+--------+-------+
+|  2 |        1 | 小红   | F      |    60 |
+|  3 |        1 | 小军   | M      |    60 |
+|  4 |        1 | 小米   | F      |    60 |
+|  8 |        3 | 小新   | F      |    60 |
+|  9 |        3 | 小王   | M      |    60 |
+| 10 |        3 | 小丽   | F      |    60 |
+| 11 |        5 | 新生   | M      |    60 |
+| 12 |        2 | 大牛   | M      |    60 |
+| 13 |        1 | 大宝   | M      |    60 |
+| 14 |        2 | 二宝   | M      |    60 |
++----+----------+--------+--------+-------+
+10 rows in set (0.00 sec)
+
+mysql> REPLACE INTO students (id, class_id, name, gender, score) VALUES (1, 1, '小明', 'F', 99);
+Query OK, 1 row affected (0.12 sec)
+
+mysql> SELECT * FROM students;
++----+----------+--------+--------+-------+
+| id | class_id | name   | gender | score |
++----+----------+--------+--------+-------+
+|  1 |        1 | 小明   | F      |    99 |
+|  2 |        1 | 小红   | F      |    60 |
+|  3 |        1 | 小军   | M      |    60 |
+|  4 |        1 | 小米   | F      |    60 |
+|  8 |        3 | 小新   | F      |    60 |
+|  9 |        3 | 小王   | M      |    60 |
+| 10 |        3 | 小丽   | F      |    60 |
+| 11 |        5 | 新生   | M      |    60 |
+| 12 |        2 | 大牛   | M      |    60 |
+| 13 |        1 | 大宝   | M      |    60 |
+| 14 |        2 | 二宝   | M      |    60 |
++----+----------+--------+--------+-------+
+11 rows in set (0.00 sec)
+
+若id=1的记录不存在，REPLACE语句将插入新记录，否则，当前id=1的记录将被删除，然后再插入新记录。
+
+【2. 插入OR更新。】
+INSERT INTO ... ON DUPLICATE KEY UPDATE ...语句：如果已存在，就更新该记录。
+例。
+mysql> INSERT INTO students (id, class_id, name, gender, score) VALUES (1, 1, '小明', 'F', 99) ON DUPLICATE KEY UPDATE name='小明', gender='F', score=99;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> SELECT * FROM students;
++----+----------+--------+--------+-------+
+| id | class_id | name   | gender | score |
++----+----------+--------+--------+-------+
+|  1 |        1 | 小明   | F      |    99 |
+|  2 |        1 | 小红   | F      |    60 |
+|  3 |        1 | 小军   | M      |    60 |
+|  4 |        1 | 小米   | F      |    60 |
+|  8 |        3 | 小新   | F      |    60 |
+|  9 |        3 | 小王   | M      |    60 |
+| 10 |        3 | 小丽   | F      |    60 |
+| 11 |        5 | 新生   | M      |    60 |
+| 12 |        2 | 大牛   | M      |    60 |
+| 13 |        1 | 大宝   | M      |    60 |
+| 14 |        2 | 二宝   | M      |    60 |
++----+----------+--------+--------+-------+
+11 rows in set (0.00 sec)
+若id=1的记录不存在，INSERT语句将插入新记录，
+否则，当前id=1的记录将被更新，更新的字段由UPDATE指定。
+
+【3. 插入OR忽略。】
+INSERT IGNORE INTO ...语句。
+已经存在，就啥事也不干直接忽略。
+例。
+mysql> INSERT IGNORE INTO students (id, class_id, name, gender, score) VALUES (1, 1, '小明', 'F', 99);
+Query OK, 0 rows affected, 1 warning (0.04 sec)
+
+mysql> SELECT * FROM students;
++----+----------+--------+--------+-------+
+| id | class_id | name   | gender | score |
++----+----------+--------+--------+-------+
+|  1 |        1 | 小明   | F      |    99 |
+|  2 |        1 | 小红   | F      |    60 |
+|  3 |        1 | 小军   | M      |    60 |
+|  4 |        1 | 小米   | F      |    60 |
+|  8 |        3 | 小新   | F      |    60 |
+|  9 |        3 | 小王   | M      |    60 |
+| 10 |        3 | 小丽   | F      |    60 |
+| 11 |        5 | 新生   | M      |    60 |
+| 12 |        2 | 大牛   | M      |    60 |
+| 13 |        1 | 大宝   | M      |    60 |
+| 14 |        2 | 二宝   | M      |    60 |
++----+----------+--------+--------+-------+
+11 rows in set (0.00 sec)
+若id=1的记录不存在，INSERT语句将插入新记录，否则，不执行任何操作。
+
+【4. 快照。】
+说明：即 复制 一份当前表的数据 到 一个新表，可以结合CREATE TABLE和SELECT：
+例子。
+mysql> -- 对class_id=1的记录进行快照，并存储为新表students_of_class1:
+mysql> CREATE TABLE students_of_class1 SELECT * FROM students WHERE class_id=1;
+Query OK, 5 rows affected (0.77 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM students;
++----+----------+--------+--------+-------+
+| id | class_id | name   | gender | score |
++----+----------+--------+--------+-------+
+|  1 |        1 | 小明   | F      |    99 |
+|  2 |        1 | 小红   | F      |    60 |
+|  3 |        1 | 小军   | M      |    60 |
+|  4 |        1 | 小米   | F      |    60 |
+|  8 |        3 | 小新   | F      |    60 |
+|  9 |        3 | 小王   | M      |    60 |
+| 10 |        3 | 小丽   | F      |    60 |
+| 11 |        5 | 新生   | M      |    60 |
+| 12 |        2 | 大牛   | M      |    60 |
+| 13 |        1 | 大宝   | M      |    60 |
+| 14 |        2 | 二宝   | M      |    60 |
++----+----------+--------+--------+-------+
+11 rows in set (0.00 sec)
+
+mysql> SELECT * FROM students_of_class1;
++----+----------+--------+--------+-------+
+| id | class_id | name   | gender | score |
++----+----------+--------+--------+-------+
+|  1 |        1 | 小明   | F      |    99 |
+|  2 |        1 | 小红   | F      |    60 |
+|  3 |        1 | 小军   | M      |    60 |
+|  4 |        1 | 小米   | F      |    60 |
+| 13 |        1 | 大宝   | M      |    60 |
++----+----------+--------+--------+-------+
+5 rows in set (0.00 sec)
+
+【5. 写入查询结果集。】
+查询的结果写入到表中，结合INSER，SELECT，将SELECT的结果直接拆入到制定表中。
+例。
+创建一个统计成绩的表statistics,记录各班平均成绩。
+mysql> CREATE TABLE statistics (
+    ->     id BIGINT NOT NULL AUTO_INCREMENT,
+    ->     class_id BIGINT NOT NULL,
+    ->     average DOUBLE NOT NULL,
+    ->     PRIMARY KEY (id)
+    -> );-------------------------------------------------------------------建表
+Query OK, 0 rows affected (0.38 sec)
+
+mysql> DESC statistics;
++----------+------------+------+-----+---------+----------------+
+| Field    | Type       | Null | Key | Default | Extra          |
++----------+------------+------+-----+---------+----------------+
+| id       | bigint(20) | NO   | PRI | NULL    | auto_increment |
+| class_id | bigint(20) | NO   |     | NULL    |                |
+| average  | double     | NO   |     | NULL    |                |
++----------+------------+------+-----+---------+----------------+
+3 rows in set (0.01 sec)---------------------------------------------------观测表
+
+###########################################
+mysql> INSERT INTO statistics (class_id, average) 
+	-> SELECT class_id, AVG(score) 
+	-> FROM students 
+	->      GROUP BY class_id;
+############################################
+Query OK, 4 rows affected (0.12 sec)
+Records: 4  Duplicates: 0  Warnings: 0 -------------------------------------插入数据到表。
+
+mysql> SELECT * FROM statistics;
++----+----------+---------+
+| id | class_id | average |
++----+----------+---------+
+|  1 |        1 |    67.8 |
+|  2 |        3 |      60 |
+|  3 |        5 |      60 |
+|  4 |        2 |      60 |
++----+----------+---------+
+4 rows in set (0.00 sec)
+mysql> SELECT * FROM students;
++----+----------+--------+--------+-------+
+| id | class_id | name   | gender | score |
++----+----------+--------+--------+-------+
+|  1 |        1 | 小明   | F      |    99 |
+|  2 |        1 | 小红   | F      |    60 |
+|  3 |        1 | 小军   | M      |    60 |
+|  4 |        1 | 小米   | F      |    60 |
+|  8 |        3 | 小新   | F      |    60 |
+|  9 |        3 | 小王   | M      |    60 |
+| 10 |        3 | 小丽   | F      |    60 |
+| 11 |        5 | 新生   | M      |    60 |
+| 12 |        2 | 大牛   | M      |    60 |
+| 13 |        1 | 大宝   | M      |    60 |
+| 14 |        2 | 二宝   | M      |    60 |
++----+----------+--------+--------+-------+
+11 rows in set (0.00 sec)
+
+
